@@ -53,30 +53,51 @@ def main(subtitles_path):
     base_names = set(os.path.splitext(f.rsplit('.', 1)[0])[0] for f in srt_files)
 
     for base_name in base_names:
+        combined_file_path = os.path.join(subtitles_path, f"{base_name}.srtout")
+        combined_file_path_with_extension = os.path.join(subtitles_path, f"{base_name}.srtout.srt")
+        combined_file_path_base = os.path.join(subtitles_path, f"{base_name}.srt")
+
+        if os.path.exists(combined_file_path_with_extension):
+            print(f"Combined .srt file already exists at {combined_file_path_with_extension} - No need to combine again.")
+            continue
+        
+        if os.path.exists(combined_file_path_base):
+            print(f"Combined .srt file already exists at {combined_file_path_base} - No need to combine again.")
+            continue
+
         srt1_path = os.path.join(subtitles_path, f"{base_name}.pt.srt")
         srt2_path = os.path.join(subtitles_path, f"{base_name}.pl.srt")
+        srt3_path = os.path.join(subtitles_path, f"{base_name}.en.srt")
 
-        combined_file_path = os.path.join(subtitles_path, f"{base_name}.srtout")
+        # Check if at least two subtitle files exist before proceeding
+        subtitle_paths = [srt1_path, srt2_path, srt3_path]
+        subtitle_paths = [path for path in subtitle_paths if os.path.exists(path)]
 
-        if os.path.exists(combined_file_path):
-            print(f"Combined .srt file already exists at {combined_file_path}. No need to combine again.")
+        if len(subtitle_paths) < 2:
+            print(f"Error: Insufficient subtitle files for {base_name}. Skipping combination.")
             continue
 
-        # Check if both .srt files exist before proceeding
-        if not os.path.exists(srt1_path) or not os.path.exists(srt2_path):
-            print(f"Error: Subtitle files missing for {base_name}. Skipping combination.")
-            continue
+        # Define priority order for language pairs
+        language_priority = [('pt', 'pl'), ('pt', 'en'), ('en', 'pl')]
 
-        with open(srt1_path, 'r', encoding='utf-8') as f:
-            srt1 = f.read()
+        for lang1, lang2 in language_priority:
+            lang1_path = os.path.join(subtitles_path, f"{base_name}.{lang1}.srt")
+            lang2_path = os.path.join(subtitles_path, f"{base_name}.{lang2}.srt")
 
-        with open(srt2_path, 'r', encoding='utf-8') as f:
-            srt2 = f.read()
+            if lang1_path in subtitle_paths and lang2_path in subtitle_paths:
+                with open(lang1_path, 'r', encoding='utf-8') as f1:
+                    srt1 = f1.read()
 
-        combined_subs = combine_subtitles(srt1, srt2)
-        generate_combined_srt(combined_subs, combined_file_path)
+                with open(lang2_path, 'r', encoding='utf-8') as f2:
+                    srt2 = f2.read()
 
-        print(f"Subtitle combination complete. Combined file saved at {combined_file_path}")
+                combined_subs = combine_subtitles(srt1, srt2)
+                generate_combined_srt(combined_subs, combined_file_path)
+
+                print(f"Subtitle combination complete. Combined file saved at {combined_file_path}")
+                break
+        else:
+            print(f"No suitable language pair found for {base_name}. Skipping combination.")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

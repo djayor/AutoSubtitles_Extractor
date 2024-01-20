@@ -71,3 +71,10 @@ for file in *.mkv; do
 done
 
 echo "Subtitle extraction complete."
+
+Python3 ~/combine_subtitles.py $1
+
+directory=$1
+
+# Find and rename .srtout.srt files to .srt recursively
+find "$directory" -type f -name '*.srtout.srt' -exec bash -c 'mv "$1" "${1%.srtout.srt}.srt"' _ {} \;
