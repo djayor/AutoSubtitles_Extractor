@@ -34,8 +34,8 @@ def combine_subtitles(srt1, srt2):
 
     return combined_subs
 
-def generate_combined_srt(combined_subs, base_name):
-    combined_file_path = f"{base_name}.srt"
+def generate_combined_srt(combined_subs, base_name, subtitles_path):
+    combined_file_path = os.path.join(subtitles_path, f"{base_name}.srtout.srt")
 
     with open(combined_file_path, 'w', encoding='utf-8') as f:
         for line in combined_subs:
@@ -44,7 +44,8 @@ def generate_combined_srt(combined_subs, base_name):
     return combined_file_path
 
 def main(subtitles_path):
-    srt_files = [f for f in os.listdir(subtitles_path) if f.endswith(".srt")]
+    # Find all .srt files in the directory and its subdirectories
+    srt_files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(subtitles_path) for f in filenames if f.endswith(".srt")]
 
     if len(srt_files) < 2:
         print("Error: At least two .srt files are required for combining subtitles.")
@@ -92,7 +93,7 @@ def main(subtitles_path):
                     srt2 = f2.read()
 
                 combined_subs = combine_subtitles(srt1, srt2)
-                generate_combined_srt(combined_subs, combined_file_path)
+                generate_combined_srt(combined_subs, base_name, subtitles_path)
 
                 print(f"Subtitle combination complete. Combined file saved at {combined_file_path}")
                 break

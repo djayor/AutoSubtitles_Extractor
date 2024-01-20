@@ -9,8 +9,8 @@ fi
 # Change to the specified directory
 cd "$1" || exit
 
-# Iterate over each MKV file in the directory
-for file in *.mkv; do
+# Find all MKV files in the directory and its subdirectories
+find . -type f -name "*.mkv" -print0 | while read -r -d $'\0' file; do
   # Extract the base name without extension
   base_name=$(basename -s .mkv "$file")
 
@@ -18,9 +18,9 @@ for file in *.mkv; do
   mplayer_output=$(mplayer -vo null -ao null -frames 0 "$file" 2>&1)
 
   # Find lines containing language codes and save them
-  por_line=$(echo "$mplayer_output" | grep -i 'por' | grep -oP 'stream \K[0-9]+')
-  pol_line=$(echo "$mplayer_output" | grep -i 'pol' | grep -oP 'stream \K[0-9]+')
-  eng_line=$(echo "$mplayer_output" | grep -i 'eng' | grep -oP 'stream \K[0-9]+')
+  por_line=$(echo "$mplayer_output" | grep -iP '(?=.*\bpor\b)(?=.*\bsrt\b)' | grep -oP 'stream \K[0-9]+')
+  pol_line=$(echo "$mplayer_output" | grep -iP '(?=.*\bpol\b)(?=.*\bsrt\b)' | grep -oP 'stream \K[0-9]+')
+  eng_line=$(echo "$mplayer_output" | grep -iP '(?=.*\beng\b)(?=.*\bsrt\b)' | grep -oP 'stream \K[0-9]+')
 
   # Extract track numbers from saved lines
   por_track=$(echo "$por_line" | head -n 1)
@@ -30,7 +30,7 @@ for file in *.mkv; do
   # Function to check if a subtitle file exists
   subtitle_exists() {
     local track="$1"
-    [ -f "${base_name}.${track}.srt" ]
+    [ -f "$(dirname "$file")/${base_name}.${track}.srt" ]
   }
 
   # Check and extract Portuguese subtitle track
@@ -38,7 +38,7 @@ for file in *.mkv; do
     if subtitle_exists "pt"; then
       echo "Portuguese subtitle already exists for $file"
     else
-      mkvextract tracks "$file" "$por_track":"${base_name}.pt.srt"
+      mkvextract tracks "$file" "$por_track":"$(dirname "$file")/${base_name}.pt.srt"
       echo "Portuguese subtitle extracted for $file"
     fi
   else
@@ -50,7 +50,7 @@ for file in *.mkv; do
     if subtitle_exists "pl"; then
       echo "Polish subtitle already exists for $file"
     else
-      mkvextract tracks "$file" "$pol_track":"${base_name}.pl.srt"
+      mkvextract tracks "$file" "$pol_track":"$(dirname "$file")/${base_name}.pl.srt"
       echo "Polish subtitle extracted for $file"
     fi
   else
@@ -62,7 +62,7 @@ for file in *.mkv; do
     if subtitle_exists "en"; then
       echo "English subtitle already exists for $file"
     else
-      mkvextract tracks "$file" "$eng_track":"${base_name}.en.srt"
+      mkvextract tracks "$file" "$eng_track":"$(dirname "$file")/${base_name}.en.srt"
       echo "English subtitle extracted for $file"
     fi
   else
@@ -72,7 +72,7 @@ done
 
 echo "Subtitle extraction complete."
 
-Python3 ~/combine_subtitles.py $1
+python3 ~/combine_subtitles.py $1
 
 directory=$1
 
