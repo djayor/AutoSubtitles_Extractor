@@ -57,6 +57,8 @@ def main(subtitles_path):
         combined_file_path = os.path.join(subtitles_path, f"{base_name}.srtout")
         combined_file_path_with_extension = os.path.join(subtitles_path, f"{base_name}.srtout.srt")
         combined_file_path_base = os.path.join(subtitles_path, f"{base_name}.srt")
+        
+        print(f"Reading file {base_name} to combine.")
 
         if os.path.exists(combined_file_path_with_extension):
             print(f"Combined .srt file already exists at {combined_file_path_with_extension} - No need to combine again.")

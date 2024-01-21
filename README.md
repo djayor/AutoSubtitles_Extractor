@@ -39,3 +39,5 @@ Add the line, to run every day at 04:00am (example):
 `04 00 * * * /path/to/script/extract_subtitles.sh /path/to/your/movie/library/ > ~/extract_subtitles.log`
 
 PS: The creation of this script arose due to a personal need, so it is not very flexible to define other languages for aggregation, however you can easily edit the variables that search for pt/por, pl/pol, en/eng for your needs personal... or perhaps in the future I could change the script so that these parameters can be transferred via arguments. :trollface:
+
+Remember to respect copyright and licensing restrictions when working with subtitles or any other content.

@@ -70,6 +70,7 @@ find . -type f -name "*.mkv" -print0 | while read -r -d $'\0' file; do
   fi
 done
 
+sleep 10
 echo "Subtitle extraction complete."
 
 python3 ~/combine_subtitles.py $1
@@ -78,3 +79,6 @@ directory=$1
 
 # Find and rename .srtout.srt files to .srt recursively
 find "$directory" -type f -name '*.srtout.srt' -exec bash -c 'mv "$1" "${1%.srtout.srt}.srt"' _ {} \;
+
+sleep 10
+echo "Subtitle combination complete."
