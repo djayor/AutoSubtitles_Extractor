@@ -2,7 +2,7 @@
 Script to extract subtitles from *.mkv files and combine 2 different languages in the same block of subtitles.
 
 This model was created to extract subtitles in Portuguese, Polish and English from .mkv files, will search in folders and subfolders passed by arguments.
-Subsequently only 2 sets of subtitles are grouped into a single block, with the first subtitle in **<span style="color:white">white</span>** and the second subtitle in **<span style="color:yellow">yellow</span>**.
+Subsequently only 2 sets of subtitles are grouped into a single block, with the first subtitle in **white** :white_circle: and the second subtitle in **yellow** :yellow_circle:.
 
 Subtitle aggregation has a defined priority according to the existing subtitles. Which will be:
 - Portuguese :portugal: / Polish :poland:
@@ -17,6 +17,8 @@ The subtitles will be extracted and, depending on the language, they will have a
 - English -> *.en.srt
 
 Once combined, they will have the .srt extension, always maintaining the same name as the .mkv file from which they were originally extracted. This way it will facilitate the selection of subtitles in multimedia players such as PLEX, Jellyfin, etc. And they will be appear in the subtitles list as "Unkown subtitle".
+
+Example of the final result:
 
 ![Block Sub example](./vlcsnap-2024-01-21-12h52m22s982.jpeg "example")
 
